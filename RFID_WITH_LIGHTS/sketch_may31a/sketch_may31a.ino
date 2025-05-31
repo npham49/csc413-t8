@@ -4,6 +4,7 @@
 
 #include <AddicoreRFID.h>
 #include <SPI.h>
+#include <Servo.h>
 
 #define	uchar	unsigned char
 #define	uint	unsigned int
@@ -21,6 +22,10 @@ const int NRSTPD = 5;
 
 const int LED_RED = 2;
 const int LED_GREEN = 3;
+Servo lockServo;    // Servo for locking mechanism
+int lockPos = 15;   // Locked position limit
+int unlockPos = 75; // Unlocked position limit
+boolean locked = true;
 
 //Maximum length of the array
 #define MAX_LEN 16
@@ -38,7 +43,10 @@ void setup() {
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_RED, OUTPUT);
 
-  myRFID.AddicoreRFID_Init();  
+  myRFID.AddicoreRFID_Init();
+
+  lockServo.attach(3); // Servo connected to pin 3
+  lockServo.write(lockPos);
 }
 
 void loop()
@@ -107,14 +115,23 @@ void loop()
                 digitalWrite(LED_GREEN, HIGH);  // turn the LED on (HIGH is the voltage level)
                 delay(2000);                      // wait for a second
                 digitalWrite(LED_GREEN, LOW);   // turn the LED off by making the voltage LOW
-                delay(1000);  
+                delay(1000);
+                if (locked == true) // If the lock is closed then open it
+                {
+                  lockServo.write(unlockPos);
+                  locked = false;
+                }
             } else {             //You can change this to the first byte of your tag by finding the card's ID through the Serial Monitor
                 Serial.println("\nNo entry!\n");
                 digitalWrite(LED_RED, HIGH);  // turn the LED on (HIGH is the voltage level)
                 delay(2000);                      // wait for a second
                 digitalWrite(LED_RED, LOW);   // turn the LED off by making the voltage LOW
-                delay(1000); 
-            }
+                delay(1000);
+                if (locked == false) // If the lock is open then close it
+                {
+                  lockServo.write(lockPos);
+                  locked = true;
+                }
             Serial.println();
             delay(1000);
 	}
