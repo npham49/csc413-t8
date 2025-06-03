@@ -6,11 +6,17 @@
 #include <SPI.h>
 #include <Servo.h>
 
+//Includes the Arduino Stepper Library
+#include <Stepper.h>
+
 #define	uchar	unsigned char
 #define	uint	unsigned int
 
 uchar fifobytes;
-uchar fifoValue;
+uchar fifoValue;a
+
+// Defines the number of steps per rotation
+const int stepsPerRevolution = 650;
 
 AddicoreRFID myRFID; // create AddicoreRFID object to control the RFID module
 
@@ -20,8 +26,12 @@ AddicoreRFID myRFID; // create AddicoreRFID object to control the RFID module
 const int chipSelectPin = 10;
 const int NRSTPD = 5;
 
-const int LED_RED = 2;
-const int LED_GREEN = 3;
+// Creates an instance of stepper class
+// Pins entered in sequence IN1-IN3-IN2-IN4 for proper step sequence
+Stepper myStepper = Stepper(stepsPerRevolution, 6, 7, 8, 9);
+
+const int LED_RED = 4;
+const int LED_GREEN = 2;
 Servo lockServo;    // Servo for locking mechanism
 int lockPos = 15;   // Locked position limit
 int unlockPos = 75; // Unlocked position limit
@@ -119,7 +129,18 @@ void loop()
                 if (locked == true) // If the lock is closed then open it
                 {
                   lockServo.write(unlockPos);
+                  delay(1000);
+                  // Rotate CW slowly at 5 RPM
+                  myStepper.setSpeed(5);
+                  myStepper.step(stepsPerRevolution);
                   locked = false;
+                } else {
+                  // Rotate CCW slowly at 5 RPM
+                  myStepper.setSpeed(5);
+                  myStepper.step(-stepsPerRevolution);
+                  delay(1000);
+                  lockServo.write(lockPos);
+                  locked = true;
                 }
             } else {             //You can change this to the first byte of your tag by finding the card's ID through the Serial Monitor
                 Serial.println("\nNo entry!\n");
@@ -127,11 +148,6 @@ void loop()
                 delay(2000);                      // wait for a second
                 digitalWrite(LED_RED, LOW);   // turn the LED off by making the voltage LOW
                 delay(1000);
-                if (locked == false) // If the lock is open then close it
-                {
-                  lockServo.write(lockPos);
-                  locked = true;
-                }
             Serial.println();
             delay(1000);
 	}

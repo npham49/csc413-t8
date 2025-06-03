@@ -80,7 +80,7 @@ void loop()
 	status = myRFID.AddicoreRFID_Anticoll(str);
 	if (status == MI_OK)
 	{
-          checksum1 = str[0] ^ str[1] ^ str[2] ^ str[3];
+          checksum1 = str[0] ^ str[1] ^ str[2]^ str[3];
           Serial.print("The tag's number is:\t");
     	    Serial.print(str[0]);
             Serial.print(" , ");
