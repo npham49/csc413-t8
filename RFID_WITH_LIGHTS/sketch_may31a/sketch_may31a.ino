@@ -137,16 +137,7 @@ void loop()
                   myStepper.step(stepsPerRevolution);
                   locked = false;
                   Serial.println("Finish opening...\n");
-                } else {
-                  Serial.println("Closing...\n");
-                  // Rotate CCW slowly at 5 RPM
-                  // myStepper.setSpeed(5);
-                  myStepper.step(-stepsPerRevolution);
-                  delay(1000);
-                  lockServo.write(lockPos);
-                  locked = true;
-                  Serial.println("Finish closing...\n");
-                }
+                } 
             } else {             //You can change this to the first byte of your tag by finding the card's ID through the Serial Monitor
                 Serial.println("\nNo entry!\n");
                 digitalWrite(LED_RED, HIGH);  // turn the LED on (HIGH is the voltage level)
