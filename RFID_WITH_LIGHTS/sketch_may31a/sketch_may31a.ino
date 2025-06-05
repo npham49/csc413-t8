@@ -13,7 +13,7 @@
 #define	uint	unsigned int
 
 uchar fifobytes;
-uchar fifoValue;a
+uchar fifoValue;
 
 // Defines the number of steps per rotation
 const int stepsPerRevolution = 650;
@@ -54,6 +54,7 @@ void setup() {
   pinMode(LED_RED, OUTPUT);
 
   myRFID.AddicoreRFID_Init();
+  myStepper.setSpeed(5);
 
   lockServo.attach(3); // Servo connected to pin 3
   lockServo.write(lockPos);
@@ -117,6 +118,7 @@ void loop()
     	      Serial.println(str[4]);
           Serial.print("Calculated Checksum:\t");
             Serial.println(checksum1);
+            Serial.println(str[0]);
             
             // Should really check all pairs, but for now we'll just use the first
             if(str[0] == 114)                      //You can change this to the first byte of your tag by finding the card's ID through the Serial Monitor
@@ -128,26 +130,21 @@ void loop()
                 delay(1000);
                 if (locked == true) // If the lock is closed then open it
                 {
+                  Serial.println("Opening...\n");
                   lockServo.write(unlockPos);
                   delay(1000);
                   // Rotate CW slowly at 5 RPM
-                  myStepper.setSpeed(5);
                   myStepper.step(stepsPerRevolution);
                   locked = false;
-                } else {
-                  // Rotate CCW slowly at 5 RPM
-                  myStepper.setSpeed(5);
-                  myStepper.step(-stepsPerRevolution);
-                  delay(1000);
-                  lockServo.write(lockPos);
-                  locked = true;
-                }
+                  Serial.println("Finish opening...\n");
+                } 
             } else {             //You can change this to the first byte of your tag by finding the card's ID through the Serial Monitor
                 Serial.println("\nNo entry!\n");
                 digitalWrite(LED_RED, HIGH);  // turn the LED on (HIGH is the voltage level)
                 delay(2000);                      // wait for a second
                 digitalWrite(LED_RED, LOW);   // turn the LED off by making the voltage LOW
                 delay(1000);
+            }
             Serial.println();
             delay(1000);
 	}
