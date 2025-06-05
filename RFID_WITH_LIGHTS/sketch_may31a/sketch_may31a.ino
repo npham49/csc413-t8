@@ -16,7 +16,7 @@ uchar fifobytes;
 uchar fifoValue;
 
 // Defines the number of steps per rotation
-const int stepsPerRevolution = 2048;
+const int stepsPerRevolution = 650;
 
 AddicoreRFID myRFID; // create AddicoreRFID object to control the RFID module
 
